@@ -9,7 +9,7 @@ It will look for solution files (.sln) and open them in Visual Studio 2017. If m
 ## Install 
 
 ```
-npm install sln-opener -g
+npm install -g sln-opener
 ```
 
 ## Usage
