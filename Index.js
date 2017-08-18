@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-'use strict';
 
 var fs = require('fs');
 var path = require("path");
@@ -28,7 +27,6 @@ function showMainMenu() {
     }
     console.log(menuItems.length + 1 + ". Exit")
 
-    //Creates a readline Interface instance
     menu = readline.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -38,6 +36,7 @@ function showMainMenu() {
         if ((input-1) < menuItems.length) {
             openSolution(menuItems[input-1])
         } else {
+            openSolution(1);
             process.exit();
         }            
     });
