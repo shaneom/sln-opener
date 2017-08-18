@@ -1,0 +1,25 @@
+{
+  "name": "sln-opener",
+  "version": "0.0.1",
+  "description": "Simple command line tool for opening VS2017 solution from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
+  "main": "index.js",
+    "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+    "keywords": [
+    "devenv",
+    "solution",
+    "sln"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "author": "Shane O' Mahoney",
+  "license": "MIT",
+  "bin": {
+    "os": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/braydie/sln-builder.git"
+  }
+}
