@@ -16,7 +16,12 @@ fs.readdir(process.cwd(), function(err, files) {
         menuItems.push(value);
     });
 
-    showMainMenu();
+    if (menuItems.length === 1) {
+        openSolution(menuItems[0]);
+    }
+    else {
+        showMainMenu();
+    }
 });
 
 function showMainMenu() {
@@ -36,7 +41,6 @@ function showMainMenu() {
         if ((input-1) < menuItems.length) {
             openSolution(menuItems[input-1])
         } else {
-            openSolution(1);
             process.exit();
         }            
     });
@@ -49,4 +53,3 @@ function openSolution(solution) {
         if(menu) menu.close();
     });
 }
-
