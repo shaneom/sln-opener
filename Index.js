@@ -8,21 +8,36 @@ var menuItems = [];
 
 function extension(element) {
   var extName = path.extname(element);
-  return extName === '.sln'; 
+  return extName === '.sln';
 };
 
-fs.readdir(process.cwd(), function(err, files) {
-    files.filter(extension).forEach(function(value) {
-        menuItems.push(value);
-    });
-
-    if (menuItems.length === 1) {
-        openSolution(menuItems[0]);
-    }
-    else {
-        showMainMenu();
-    }
+var Registry = require('winreg'),
+    regKey = new Registry({                                       // new operator is optional 
+    hive: Registry.HKCR                                       // open registry hive HKEY_CURRENT_USER 
+    //key:  '\\VisualStudio.DTE.15.0' // key containing autostart programs 
+})
+ 
+// list autostart programs 
+regKey.values(function (err, items /* array of RegistryItem */) {
+  if (err)
+    console.log('ERROR: '+err);
+  else
+    for (var i=0; i<items.length; i++)
+      console.log('ITEM: '+items[i].name+'\t'+items[i].type+'\t'+items[i].value);
 });
+
+//fs.readdir(process.cwd(), function(err, files) {    
+//    files.filter(extension).forEach(function(value) {
+//        menuItems.push(value);
+//    });
+
+//    if (menuItems.length === 1) {
+//        openSolution(menuItems[0]);
+//    }
+//    else {
+//        showMainMenu();
+//    }
+//});
 
 function showMainMenu() {
     if (menuItems.length > 0) {
