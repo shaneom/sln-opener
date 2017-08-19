@@ -3,15 +3,17 @@
   "version": "0.0.1",
   "description": "Simple command line tool for opening VS2017 solution from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
   "main": "index.js",
-    "scripts": {
+  "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-    "keywords": [
+  "keywords": [
     "devenv",
     "solution",
     "sln"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "winreg": "^1.2.4"
+  },
   "devDependencies": {},
   "author": "Shane O' Mahoney",
   "license": "MIT",
