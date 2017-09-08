@@ -3,4 +3,5 @@ logs
 *.sln
 *.usr
 *.sqlproj
+*.sqlproj.user
 *.suo

@@ -12,7 +12,7 @@
     "sln"
   ],
   "dependencies": {
-    "winreg": "^1.2.4"
+    "dotenv": "^4.0.0"
   },
   "devDependencies": {},
   "author": "Shane O' Mahoney",
