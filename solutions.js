@@ -4,16 +4,16 @@ module.exports.getSolutions = function() {
     var menu;
     var menuItems = [];
 
-    var extention = function (element) {
+    var slnExtention = function (element) {
         var extName = path.extname(element);
         return extName === '.sln';
     };
-//path.extname(element) === '.sln'
-    fs.readdir(process.cwd(), function(err, files) {    
-        files.filter(extension).forEach(function(value) {
-            menuItems.push(value);
-        });    
+
+    var data = fs.readdirSync(process.cwd());    
+    data.filter(slnExtention).forEach(function(value) {
+        menuItems.push(value);
     });
-    
-    return menuItems;    
+
+
+    return menuItems;
 }
