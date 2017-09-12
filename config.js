@@ -15,20 +15,34 @@ module.exports.getValidVsPath = function() {
 
         ui.question('Please enter the path to your visual studio. ', function(path) {
             if (fs.existsSync(`${path}\\devenv.exe`)) {
-                nconf.set('config:vsPath', path);
-                
-                nconf.save(function (err) {
-                    fs.readFile('./config.json', function (err, data) {
-                        console.dir(JSON.parse(data.toString()))
-                    });
-                });
+                nconf.set('config:vsPath', path);                
+                nconf.save();
+                console.log("Your visual studio path was saved.  Please type 'so' to open your solution.")
             }
             else {
-                console.log(`The visual studio executable ${path}\\devenv.exe does not exist.  Please ensure you give the correct path to your visual studio instance.`)
+                console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`)
             }
             ui.close();
         });
     }
 
-    return vsPath;    
+    return vsPath;
+}
+
+module.exports.getSolutions = function() {
+    const fs = require('fs');
+    const path = require("path");
+    var solutions = [];
+
+    var slnExtention = function (element) {
+        var extName = path.extname(element);
+        return extName === '.sln';
+    };
+
+    var data = fs.readdirSync(process.cwd());    
+    data.filter(slnExtention).forEach(function(value) {
+        solutions.push(value);
+    });
+
+    return solutions;
 }
