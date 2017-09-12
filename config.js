@@ -1,8 +1,8 @@
 module.exports.getValidVsPath = function() {
-    var fs = require('fs');
-    var readline = require('readline')
-    var nconf = require('nconf');
-    var vsPath;
+    let fs = require('fs');
+    let readline = require('readline')
+    let nconf = require('nconf');
+    let vsPath = "";
 
     nconf.use('file', { file: './config.json' });
     vsPath =  nconf.get('config:vsPath');
