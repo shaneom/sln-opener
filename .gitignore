@@ -5,3 +5,4 @@ logs
 *.sqlproj
 *.sqlproj.user
 *.suo
+*.eslintrc.json

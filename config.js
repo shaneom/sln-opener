@@ -1,13 +1,13 @@
 module.exports.getValidVsPath = function() {
     let fs = require('fs');
-    let readline = require('readline')
+    let readline = require('readline');
     let nconf = require('nconf');
-    let vsPath = "";
+    let vsPath = '';
 
     nconf.use('file', { file: './config.json' });
     vsPath =  nconf.get('config:vsPath');
     
-    if ( vsPath === "") {
+    if ( vsPath === '') {
         let ui = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -17,21 +17,21 @@ module.exports.getValidVsPath = function() {
             if (fs.existsSync(`${path}\\devenv.exe`)) {
                 nconf.set('config:vsPath', path);                
                 nconf.save();
-                console.log("Your visual studio path was saved.  Please type 'so' to open your solution.")
+                console.log('Your visual studio path was saved.  Please type \'so\' to open your solution.');
             }
             else {
-                console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`)
+                console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`);
             }
             ui.close();
         });
     }
 
     return vsPath;
-}
+};
 
 module.exports.getSolutions = function() {
     const fs = require('fs');
-    const path = require("path");
+    const path = require('path');
     var solutions = [];
 
     var slnExtention = function (element) {
@@ -45,4 +45,4 @@ module.exports.getSolutions = function() {
     });
 
     return solutions;
-}
+};

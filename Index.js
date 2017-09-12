@@ -1,13 +1,12 @@
 #!/usr/bin/env node
-(function () {
-    const config = require('./config');
-    const menu = require('./mainMenu');
 
-    var vsPath = config.getValidVsPath();
-    
-    if (vsPath != "")
-    {
-        var solutions = config.getSolutions();
-        menu.loadSolution(solutions, vsPath);     
-    }
-}());
+const config = require('./config');
+const menu = require('./mainMenu');
+
+let vsPath = config.getValidVsPath();
+
+if (vsPath != '')
+{
+    let solutions = config.getSolutions();
+    menu.loadSolution(solutions, vsPath);     
+}

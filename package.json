@@ -12,7 +12,6 @@
     "sln"
   ],
   "dependencies": {
-    "dotenv": "^4.0.0",
     "nconf": "^0.8.4"
   },
   "devDependencies": {
