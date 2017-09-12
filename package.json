@@ -1,6 +1,6 @@
 {
   "name": "sln-opener",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple command line tool for opening VS2017 solution from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "sln"
   ],
   "dependencies": {
-    "dotenv": "^4.0.0"
+    "dotenv": "^4.0.0",
+    "nconf": "^0.8.4"
   },
   "devDependencies": {
     "eslint": "^4.6.1",
