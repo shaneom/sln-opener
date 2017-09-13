@@ -1,7 +1,7 @@
 {
   "name": "sln-opener",
-  "version": "0.0.5",
-  "description": "Simple command line tool for opening VS2017 solution from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
+  "version": "0.0.6",
+  "description": "Simple command line tool for opening visual studio solutions from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,11 +12,11 @@
     "sln"
   ],
   "dependencies": {
+    "get-installed-path": "^3.0.1",
     "nconf": "^0.8.4"
   },
   "devDependencies": {
-    "eslint": "^4.6.1",
-    "eslint-plugin-react": "^7.3.0"
+    "eslint": "^4.6.1"
   },
   "author": "Shane O' Mahoney",
   "license": "MIT",

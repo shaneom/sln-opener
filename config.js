@@ -1,12 +1,15 @@
 module.exports.getValidVsPath = function() {
+    const getInstalledPath = require('get-installed-path');
+    const slnPath = getInstalledPath.sync('sln-opener');
     let fs = require('fs');
     let readline = require('readline');
     let nconf = require('nconf');
+    let configPath = slnPath + '\\config.json';
     let vsPath = '';
 
-    nconf.use('file', { file: './config.json' });
+    nconf.use('file', { file: configPath });
     vsPath =  nconf.get('config:vsPath');
-    
+
     if ( vsPath === '') {
         let ui = readline.createInterface({
             input: process.stdin,
