@@ -20,7 +20,7 @@ module.exports.getValidVsPath = function() {
             if (fs.existsSync(`${path}\\devenv.exe`)) {
                 nconf.set('config:vsPath', path);                
                 nconf.save();
-                console.log('Your visual studio path was saved.  Please type \'so\' to open your solution.');
+                console.log('Your visual studio path was saved.  Please type \'os\' to open your solution.');
             }
             else {
                 console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`);
