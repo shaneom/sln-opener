@@ -1,15 +1,8 @@
 module.exports.loadSolution = function(menuItems, vspath) {
     const readline = require('readline');
-    const isAdmin = require('is-admin');
     let menu = null;
 
-    isAdmin().then(admin => {
-        if (admin) {
-            createMenu();
-        } else {
-            console.log('You need elevated permission to run this tool.  Please reload your CLI with administrative access.');
-        }
-    });
+    createMenu();
 
     var createMenu = function () {
         if (menuItems.length > 0) {
