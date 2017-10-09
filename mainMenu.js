@@ -18,14 +18,13 @@ module.exports.loadSolution = function(menuItems, vspath) {
         let menuOption = parseInt(input);
         if (isNaN(menuOption)) {process.exit();}
         if ((menuOption-1) < menuItems.length){ 
-            const execFile = require('child_process').execFile;
-            execFile(vspath + '\\devenv.exe ', [ menuItems[menuOption-1] ], (error) => {
-                if (error) { 
-                    console.log('An error occured when trying to open your solution.  Ensure that you have Visual Studio 2017 installed.');
-                    console.log(error);
-                }
-                if(menu) menu.close();
+            const {spawn} = require("child_process");
+            const subprocess = spawn(vspath + '\\devenv.exe ', [ menuItems[menuOption-1] ], {
+                detached: true,
+                stdio: 'ignore'
             });
+            subprocess.unref();
+            if(menu) menu.close();
         } else {
             process.exit();            
         }
