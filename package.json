@@ -1,7 +1,7 @@
 {
   "name": "sln-opener",
-  "version": "0.1.0",
-  "description": "Simple command line tool for opening visual studio solutions from their current directory.  Useful if you are using something like git-posh and want to open one of the solutions in the repository.",
+  "version": "0.2.0",
+  "description": "Simple command line tool for opening visual studio solutions from their current directory.  Useful if you work from the command prommpt using tools like git-posh.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

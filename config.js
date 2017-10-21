@@ -1,6 +1,7 @@
 module.exports.getValidVsPath = function() {
     const getInstalledPath = require('get-installed-path');
     const slnPath = getInstalledPath.sync('sln-opener');
+    const colors = require('colors');
     let fs = require('fs');
     let readline = require('readline');
     let nconf = require('nconf');
@@ -20,10 +21,10 @@ module.exports.getValidVsPath = function() {
             if (fs.existsSync(`${path}\\devenv.exe`)) {
                 nconf.set('config:vsPath', path);                
                 nconf.save();
-                console.log('Your visual studio path was saved.  Please type \'os\' to open your solution.');
+                console.log('Your visual studio path was saved.  Please type \'os\' to open your solution.'.bgGreen);
             }
             else {
-                console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`);
+                console.log(`The visual studio executable '${path}\\devenv.exe' does not exist.  Please ensure you give the correct path to your visual studio instance.`.bgRed);
             }
             ui.close();
         });
@@ -33,8 +34,8 @@ module.exports.getValidVsPath = function() {
 };
 
 module.exports.getSolutions = function() {
-    const fs = require('fs');
     const path = require('path');
+    const recursiveReadSync = require('recursive-readdir-sync');
     var solutions = [];
 
     var slnExtention = function (element) {
@@ -42,10 +43,11 @@ module.exports.getSolutions = function() {
         return extName === '.sln';
     };
 
-    var data = fs.readdirSync(process.cwd());    
+    var currentDir = process.cwd();
+    var data = recursiveReadSync(currentDir);
     data.filter(slnExtention).forEach(function(value) {
-        solutions.push(value);
+        solutions.push(value);            
     });
-
+    
     return solutions;
 };

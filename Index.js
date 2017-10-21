@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const isAdmin = require('is-admin');
+const colors = require('colors');
 const config = require('./config');
 const menu = require('./mainMenu');
 
@@ -7,7 +8,7 @@ isAdmin().then(admin => {
     if (admin) {
         startUp();
     } else {
-        console.log('You need elevated permission to run this tool.  Please reload your CLI with administrative access.');
+        console.log('You need elevated permission to run this tool.  Please reload your CLI with administrative access.'.bgRed);
     }
 });
 
@@ -16,6 +17,7 @@ var startUp = function() {
     
     if (vsPath != '') {
         let solutions = config.getSolutions();
+
         menu.loadSolution(solutions, vsPath);     
     }
-}
+};
