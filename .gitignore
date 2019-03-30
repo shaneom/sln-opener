@@ -6,3 +6,4 @@ logs
 *.sqlproj.user
 *.suo
 *.eslintrc.json
+node_modules/
