@@ -1,6 +1,6 @@
 {
   "name": "sln-opener",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Simple command line tool for opening visual studio solutions from their current directory.  Useful if you work from the command prommpt using tools like git-posh.",
   "main": "index.js",
   "scripts": {
