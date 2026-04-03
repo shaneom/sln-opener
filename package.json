@@ -4,7 +4,8 @@
   "description": "Simple command line tool for opening visual studio solutions from their current directory.  Useful if you work from the command prommpt using tools like git-posh.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "devenv",
@@ -14,12 +15,13 @@
   "dependencies": {
     "colors": "^1.1.2",
     "get-installed-path": "^3.0.1",
-    "is-admin": "^2.1.1",
-    "nconf": "^0.8.4",
+    "is-admin": "^4.0.0",
+    "nconf": "^0.13.0",
     "recursive-readdir-sync": "^1.0.6"
   },
   "devDependencies": {
-    "eslint": "^4.6.1"
+    "eslint": "^10.1.0",
+    "jest": "^30.3.0"
   },
   "author": "Shane O' Mahoney",
   "license": "MIT",

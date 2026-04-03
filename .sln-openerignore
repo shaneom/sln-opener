@@ -1,0 +1,47 @@
+# .sln-openerignore - Skip directories during solution discovery
+# Similar to .gitignore, helps speed up solution search by skipping large directories
+
+# Package managers
+node_modules
+packages
+.nuget
+
+# Version control
+.git
+.svn
+.hg
+
+# Build outputs
+bin
+obj
+build
+dist
+out
+target
+Release
+Debug
+
+# IDE and editor files
+.vs
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/*
+vendor
+lib/csharp/*
+
+# Runtime
+venv
+env
+__pycache__
+
+# Cache and temp
+.cache
+temp
+tmp
+*.log

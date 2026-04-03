@@ -1,0 +1,117 @@
+
+> sln-opener@0.2.1 test
+> jest
+
+FAIL __tests__/mainMenu.test.js
+  mainMenu.js
+    loadSolution
+      ΓêÜ should directly launch solution when only one solution found (27 ms)
+      ΓêÜ should show menu when multiple solutions found (9 ms)
+      ΓêÜ should show IDE type in menu (8 ms)
+      ΓêÜ should show error when no solutions found (10 ms)
+      ΓêÜ should reprompt on invalid input (8 ms)
+      ├ù should handle Visual Studio solution spawning (10 ms)
+      ├ù should handle JetBrains Rider solution spawning (13 ms)
+      ├ù should add error handler to subprocess (10 ms)
+      ├ù should handle all menu options gracefully (12 ms)
+
+  ΓùÅ mainMenu.js ΓÇ║ loadSolution ΓÇ║ should handle Visual Studio solution spawning
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: StringContaining "devenv.exe", Any<Array>, Any<Object>
+
+    Number of calls: 0
+
+      146 |       questionCallback('2');
+      147 |
+    > 148 |       expect(spawn).toHaveBeenCalledWith(expect.stringContaining('devenv.exe'), expect.any(Array), expect.any(Object));
+          |                     ^
+      149 |     });
+      150 |
+      151 |     it('should handle JetBrains Rider solution spawning', () => {
+
+      at Object.toHaveBeenCalledWith (__tests__/mainMenu.test.js:148:21)
+
+  ΓùÅ mainMenu.js ΓÇ║ loadSolution ΓÇ║ should handle JetBrains Rider solution spawning
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      174 |
+      175 |       // Should call spawn with rider path and the .iml file
+    > 176 |       expect(spawn).toHaveBeenCalled();
+          |                     ^
+      177 |       const spawnCall = spawn.mock.calls[spawn.mock.calls.length - 1];
+      178 |       expect(spawnCall[0]).toContain('rider');
+      179 |     });
+
+      at Object.toHaveBeenCalled (__tests__/mainMenu.test.js:176:21)
+
+  ΓùÅ mainMenu.js ΓÇ║ loadSolution ΓÇ║ should add error handler to subprocess
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: "error", Any<Function>
+
+    Number of calls: 0
+
+      200 |       mainMenu.loadSolution(mockMenuItems, mockIdePaths);
+      201 |
+    > 202 |       expect(mockSubprocess.on).toHaveBeenCalledWith('error', expect.any(Function));
+          |                                 ^
+      203 |     });
+      204 |
+      205 |     it('should handle all menu options gracefully', () => {
+
+      at Object.toHaveBeenCalledWith (__tests__/mainMenu.test.js:202:33)
+
+  ΓùÅ mainMenu.js ΓÇ║ loadSolution ΓÇ║ should handle all menu options gracefully
+
+    expect(jest.fn()).toHaveBeenCalled()
+
+    Expected number of calls: >= 1
+    Received number of calls:    0
+
+      224 |       mainMenu.loadSolution(mockMenuItems, mockIdePaths);
+      225 |
+    > 226 |       expect(spawn).toHaveBeenCalled();
+          |                     ^
+      227 |     });
+      228 |   });
+      229 | });
+
+      at Object.toHaveBeenCalled (__tests__/mainMenu.test.js:226:21)
+
+PASS __tests__/config.test.js
+  config.js
+    detectIDEType
+      ΓêÜ should detect Visual Studio .sln files (5 ms)
+      ΓêÜ should detect Visual Studio 2022 .slnx files (1 ms)
+      ΓêÜ should detect JetBrains Rider .iml files (1 ms)
+      ΓêÜ should detect JetBrains IntelliJ .idea files (1 ms)
+      ΓêÜ should handle case-insensitive extensions (1 ms)
+    getIDEPaths
+      ΓêÜ should return cached IDE paths if already configured (55 ms)
+      ΓêÜ should call readline when paths are empty (9 ms)
+    getSolutions
+      ΓêÜ should return array of solution objects with IDE info (4 ms)
+      ΓêÜ should return empty array if no solutions found (1 ms)
+      ΓêÜ should support multiple file types (2 ms)
+      ΓêÜ should call recursiveReadSync with current directory (2 ms)
+
+-------------|---------|----------|---------|---------|--------------------------
+File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s        
+-------------|---------|----------|---------|---------|--------------------------
+All files    |   70.58 |    47.88 |   78.94 |   70.45 |                          
+ config.js   |   62.66 |    36.66 |   76.92 |   62.66 | 52-58,66-95              
+ mainMenu.js |   80.32 |    56.09 |   83.33 |    80.7 | 56,66-67,88-92,97-98,108 
+-------------|---------|----------|---------|---------|--------------------------
+Jest: "global" coverage threshold for branches (50%) not met: 47.88%
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       4 failed, 16 passed, 20 total
+Snapshots:   0 total
+Time:        1.052 s
+Ran all test suites.
