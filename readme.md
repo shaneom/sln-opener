@@ -6,10 +6,9 @@ A command line tool for opening Visual Studio solutions and JetBrains projects d
 
 ## Features
 
-- 🔍 **Multi-IDE Support**: Opens Visual Studio solutions (.sln/.slnx) and JetBrains projects (.iml)
+- 🔍 **Multi-IDE Support**: Opens Visual Studio solutions (.sln/.slnx) and JetBrains projects (.iml/.idea)
 - 🔄 **Recursive Search**: Automatically finds all supported project files in the current directory and subdirectories
 - 📋 **Interactive Menu**: When multiple projects are found, presents a numbered menu with IDE indicators
-- 📦 **IDE Grouping**: Solutions organized by IDE type for easier navigation
 - ⏱️ **Recent Solutions**: Quickly access recently opened projects with timestamps
 - 🔎 **Search & Filter**: Filter results by project name or directory path
 - 🚀 **Batch Open**: Open all projects at once with a single menu option
@@ -24,7 +23,7 @@ A command line tool for opening Visual Studio solutions and JetBrains projects d
 | `.sln` | Visual Studio | ✓ (at least one) |
 | `.slnx` | Visual Studio 2022 | Optional |
 | `.iml` | JetBrains Rider | Optional |
-| `.iml` | JetBrains IntelliJ IDEA | Optional |
+| `.idea` | JetBrains IntelliJ IDEA (directory) | Optional |
 
 ## Requirements
 
@@ -99,10 +98,10 @@ Search solutions (or press Enter to show all): web
 
 ### IDE Grouping
 
-Solutions are automatically organized by IDE type for better navigation:
+Solutions are displayed with IDE labels for easy identification:
 - **Visual Studio** (.sln, .slnx files)
 - **JetBrains Rider** (.iml files for C# projects)
-- **JetBrains IntelliJ IDEA** (.iml files for Java projects)
+- **JetBrains IntelliJ IDEA** (.idea project directories)
 
 ### Examples
 
@@ -186,7 +185,7 @@ On first run, you can configure paths to:
 - Rider: `C:\Users\User\AppData\Local\JetBrains\Toolbox\apps\Rider\ch-0\233.11235.16\bin`
 - IntelliJ: `C:\Program Files\JetBrains\IntelliJ IDEA 2023.2\bin`
 
-Configuration is typically stored in: `%APPDATA%\npm\node_modules\sln-opener\config.json`
+Configuration is stored in: `~/.sln-opener/config.json`
 
 ## Troubleshooting
 
@@ -199,7 +198,7 @@ Configuration is typically stored in: `%APPDATA%\npm\node_modules\sln-opener\con
 - The path you entered is incorrect or the IDE is not installed
 - Verify your IDE installation path is correct
 - Try running the tool again - it will prompt you to re-enter paths
-- Configuration file location: `%APPDATA%\npm\node_modules\sln-opener\config.json`
+- Configuration file location: `~/.sln-opener/config.json`
 
 ### "There are no solutions to open"
 - No supported project files were found in the current directory or subdirectories

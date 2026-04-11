@@ -3,7 +3,6 @@ const fs = require('fs');
 jest.mock('fs');
 jest.mock('nconf');
 jest.mock('readline');
-jest.mock('recursive-readdir-sync');
 
 describe('config.js', () => {
   let config;
@@ -194,31 +193,55 @@ describe('config.js', () => {
     it('should skip directories matching ignore patterns', () => {
       const fs = require('fs');
       
-      // Mock fs methods for ignore pattern testing
-      fs.existsSync.mockReturnValue(true);
+      // Mock a simple directory tree:
+      //   cwd/
+      //     node_modules/  (should be skipped)
+      //     build/         (should be skipped)
+      //     src/           (should be searched)
+      //       App.sln      (should be found)
+      const cwd = process.cwd();
+      const nodeMod = require('path').join(cwd, 'node_modules');
+      const build = require('path').join(cwd, 'build');
+      const src = require('path').join(cwd, 'src');
+      const sln = require('path').join(src, 'App.sln');
+
+      fs.existsSync.mockImplementation((p) => p.endsWith('.sln-openerignore'));
       fs.readFileSync.mockReturnValue('node_modules\nbuild\n');
-      fs.readdirSync.mockReturnValue([
-        'node_modules',
-        'build',
-        'src'
-      ]);
-      fs.statSync.mockImplementation((path) => {
+      fs.readdirSync.mockImplementation((p) => {
+        if (p === cwd) return ['node_modules', 'build', 'src'];
+        if (p === src) return ['App.sln'];
+        return [];
+      });
+      fs.statSync.mockImplementation((p) => {
+        const isDir = p === nodeMod || p === build || p === src;
         return {
-          isDirectory: () => true,
-          isFile: () => false
+          isDirectory: () => isDir,
+          isFile: () => !isDir
         };
       });
 
       config = require('../config');
       const solutions = config.getSolutions();
-      
-      // The function should return an array
+
+      // node_modules and build are skipped; App.sln inside src is found
       expect(Array.isArray(solutions)).toBe(true);
+      expect(solutions.length).toBe(1);
+      expect(solutions[0].path).toBe(sln);
     });
 
-    it('should support empty solutions array', () => {
-      const mockRecursiveReadSync = require('recursive-readdir-sync');
-      mockRecursiveReadSync.mockReturnValue([]);
+    it('should return empty array when directory has no solution files', () => {
+      const fs = require('fs');
+      const cwd = process.cwd();
+
+      fs.existsSync.mockReturnValue(false);
+      fs.readdirSync.mockImplementation((p) => {
+        if (p === cwd) return ['readme.md', 'package.json'];
+        return [];
+      });
+      fs.statSync.mockImplementation(() => ({
+        isDirectory: () => false,
+        isFile: () => true
+      }));
 
       config = require('../config');
       const solutions = config.getSolutions();
@@ -263,6 +286,80 @@ describe('config.js', () => {
       const result = config.formatTimeAgo(threeDaysAgo);
 
       expect(result).toMatch(/d ago/);
+    });
+  });
+
+  describe('selectIDEForSession', () => {
+    it('should return null when no IDEs are configured', async () => {
+      config = require('../config');
+      const result = await config.selectIDEForSession({ vsPath: '', riderPath: '', ideaPath: '' });
+      expect(result).toBeNull();
+    });
+
+    it('should auto-select "vs" when only VS is configured', async () => {
+      config = require('../config');
+      const result = await config.selectIDEForSession({
+        vsPath: 'C:\\VS\\IDE',
+        riderPath: '',
+        ideaPath: ''
+      });
+      expect(result).toBe('vs');
+    });
+
+    it('should auto-select "rider" when only Rider is configured', async () => {
+      config = require('../config');
+      const result = await config.selectIDEForSession({
+        vsPath: '',
+        riderPath: 'C:\\Rider\\bin',
+        ideaPath: ''
+      });
+      expect(result).toBe('rider');
+    });
+
+    it('should auto-select "idea" when only IDEA is configured', async () => {
+      config = require('../config');
+      const result = await config.selectIDEForSession({
+        vsPath: '',
+        riderPath: '',
+        ideaPath: 'C:\\IDEA\\bin'
+      });
+      expect(result).toBe('idea');
+    });
+
+    it('should prompt and return selected IDE when multiple are configured', async () => {
+      const readline = require('readline');
+      const mockUi = { question: jest.fn(), close: jest.fn() };
+      readline.createInterface.mockReturnValue(mockUi);
+
+      // Simulate user selecting option 1 (Visual Studio)
+      mockUi.question.mockImplementation((prompt, cb) => cb('1'));
+
+      config = require('../config');
+      const result = await config.selectIDEForSession({
+        vsPath: 'C:\\VS\\IDE',
+        riderPath: 'C:\\Rider\\bin',
+        ideaPath: ''
+      });
+
+      expect(result).toBe('vs');
+    });
+
+    it('should return null (auto mode) when user selects the Auto option', async () => {
+      const readline = require('readline');
+      const mockUi = { question: jest.fn(), close: jest.fn() };
+      readline.createInterface.mockReturnValue(mockUi);
+
+      // Auto option is index options.length+1, here VS+Rider = 2 options, so auto = 3
+      mockUi.question.mockImplementation((prompt, cb) => cb('3'));
+
+      config = require('../config');
+      const result = await config.selectIDEForSession({
+        vsPath: 'C:\\VS\\IDE',
+        riderPath: 'C:\\Rider\\bin',
+        ideaPath: ''
+      });
+
+      expect(result).toBeNull();
     });
   });
 });

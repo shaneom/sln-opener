@@ -57,9 +57,11 @@ async function startUp() {
 
     // If at least one IDE is configured, proceed to solution discovery
     if (idePaths.vsPath || idePaths.riderPath || idePaths.ideaPath) {
+        // Let user choose which IDE to use (auto-skipped when only one is configured)
+        const selectedIDE = await config.selectIDEForSession(idePaths);
         // Discover all solution files in current directory and subdirectories
         const solutions = config.getSolutions();
         // Show menu to let user select which solution to open
-        menu.loadSolution(solutions, idePaths);
+        menu.loadSolution(solutions, idePaths, selectedIDE);
     }
 }

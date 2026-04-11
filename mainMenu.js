@@ -9,8 +9,9 @@
  * - Exit
  * @param {Array<Object>} menuItems - Array of solution/project objects with path, ide, and executable properties
  * @param {Object} idePaths - Object with vsPath, riderPath, and ideaPath properties
+ * @param {string|null} selectedIDE - 'vs', 'rider', 'idea', or null for auto-detection per file type
  */
-module.exports.loadSolution = function(menuItems, idePaths) {
+module.exports.loadSolution = function(menuItems, idePaths, selectedIDE = null) {
     const readline = require('readline');
     const path = require('path');
     const colors = require('colors');
@@ -34,11 +35,7 @@ module.exports.loadSolution = function(menuItems, idePaths) {
             output: process.stdout
         });
 
-        if (allItems.length <= 1) {
-            promptSearch(allItems);
-        } else {
-            promptSearch(allItems);
-        }
+        promptSearch(allItems);
     }
 
     function promptSearch(allItems) {
@@ -82,38 +79,33 @@ module.exports.loadSolution = function(menuItems, idePaths) {
             displayItems.push('(Clear Filter)');
         }
         
-        // Show recently opened solutions at the top (up to last 5 opened)
+        // Collect recent solutions that exist in the current directory scan
         let recentDisplayItems = [];
         if (showRecent && recentSolutions.length > 0) {
-            console.log('⏱️  RECENT (Last 5 opened):');
             recentSolutions.forEach(recent => {
                 const solutionItem = allItems.find(item => item.path === recent.path);
                 if (solutionItem) {
-                    recentDisplayItems.push(solutionItem);
-                    const ideLabel = solutionItem.ide ? ` [${solutionItem.ide}]` : '';
-                    const timeAgo = config.formatTimeAgo(recent.timestamp);
-                    console.log(`  • ${path.basename(solutionItem.path)}${ideLabel} - ${timeAgo}`);
+                    recentDisplayItems.push({ item: solutionItem, timeAgo: config.formatTimeAgo(recent.timestamp) });
                 }
             });
-            console.log('');
         }
         
-        // Show how many results match the current filter
-        if (currentFilter) {
-            console.log(`📁 Results for "${currentFilter}" (${filteredItems.length} of ${allItems.length}):`);
-            console.log('');
-        }
-        
-        // Add filtered solutions
+        // Add filtered solutions (skip those already in recent so they don't appear twice)
         filteredItems.forEach(item => {
-            // Skip if already in recent
-            if (!recentDisplayItems.find(r => r.path === item.path)) {
+            if (!recentDisplayItems.find(r => r.item.path === item.path)) {
                 displayItems.push(item);
             }
         });
         
-        // Display menu
+        // Display menu - number every selectable item including recent ones
         let displayIndex = 1;
+
+        // Print recent section header first (items will appear as numbered options)
+        if (recentDisplayItems.length > 0) {
+            console.log('⏱️  RECENT (Last 5 opened):');
+        }
+
+        // Print all items with numbers so users know exactly what to type
         for (let i = 0; i < displayItems.length; i++) {
             const item = displayItems[i];
             if (typeof item === 'string') {
@@ -125,13 +117,29 @@ module.exports.loadSolution = function(menuItems, idePaths) {
                 displayIndex++;
             }
         }
+
+        // Print recent items as numbered options after the main list
+        if (recentDisplayItems.length > 0) {
+            console.log('');
+            recentDisplayItems.forEach(({ item, timeAgo }) => {
+                const ideLabel = item.ide ? ` [${item.ide}]` : '';
+                console.log(displayIndex + '. ' + path.basename(item.path) + ideLabel + ' - ' + timeAgo);
+                displayIndex++;
+            });
+            console.log('');
+        }
+
+        // Show filter context
+        if (currentFilter) {
+            console.log(`📁 Results for "${currentFilter}" (${filteredItems.length} of ${allItems.length})`);
+            console.log('');
+        }
+
+        // Exit/New Search is always the last numbered option
+        const allSelectableItems = displayItems.concat(recentDisplayItems.map(r => r.item));
+        console.log(allSelectableItems.length + 1 + '. ' + (currentFilter ? 'New Search' : 'Exit'));
         
-        // Add recent solutions to displayItems after the menu
-        const allDisplayItems = displayItems.concat(recentDisplayItems);
-        
-        console.log(allDisplayItems.length + 1 + '. ' + (currentFilter ? 'New Search' : 'Exit'));
-        
-        createMenu(displayItems, filteredItems, allItems, recentDisplayItems);
+        createMenu(displayItems, filteredItems, allItems, recentDisplayItems.map(r => r.item));
     }
 
     function createMenu(displayItems, filteredItems, allItems, recentDisplayItems) {
@@ -195,15 +203,20 @@ module.exports.loadSolution = function(menuItems, idePaths) {
         // Record this solution as recently opened for quick access next time
         config.addToRecentSolutions(solutionFile);
 
-        const ideType = solutionFile.type;
+        // Use the session IDE selection if set, otherwise auto-detect by file type
+        const ideType = selectedIDE || solutionFile.type;
         let ideExePath = '';
 
         if (ideType === 'vs') {
-            ideExePath = path.join(idePaths.vsPath, 'devenv.exe');
-        } else if (ideType === 'jetbrains') {
-            if (solutionFile.executable === 'rider.exe' && idePaths.riderPath) {
+            if (idePaths.vsPath) {
+                ideExePath = path.join(idePaths.vsPath, 'devenv.exe');
+            }
+        } else if (ideType === 'rider' || (ideType === 'jetbrains' && solutionFile.executable === 'rider.exe')) {
+            if (idePaths.riderPath) {
                 ideExePath = path.join(idePaths.riderPath, 'rider.exe');
-            } else if (solutionFile.executable === 'idea.exe' && idePaths.ideaPath) {
+            }
+        } else if (ideType === 'idea' || (ideType === 'jetbrains' && solutionFile.executable === 'idea.exe')) {
+            if (idePaths.ideaPath) {
                 ideExePath = path.join(idePaths.ideaPath, 'idea.exe');
             }
         }
