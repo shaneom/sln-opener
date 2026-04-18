@@ -586,16 +586,22 @@ module.exports.selectIDEForSession = async function(idePaths) {
 module.exports.detectIDEType = function(filePath) {
     const path = require('path');
     const ext = path.extname(filePath).toLowerCase();
+    const base = path.basename(filePath).toLowerCase();
+
+    // Handle the special case where .idea is a directory (IntelliJ projects)
+    if (base === '.idea') {
+        return { type: 'jetbrains', name: 'JetBrains IntelliJ IDEA', executable: process.platform === 'win32' ? 'idea.exe' : 'idea' };
+    }
 
     const ideMap = {
         '.sln': { type: 'vs', name: 'Visual Studio', executable: 'devenv.exe' },
         '.slnx': { type: 'vs', name: 'Visual Studio 2022', executable: 'devenv.exe' },
-        '.iml': { type: 'jetbrains', name: 'JetBrains Rider', executable: 'rider.exe' },
-        '.idea': { type: 'jetbrains', name: 'JetBrains IntelliJ IDEA', executable: 'idea.exe' }
+        '.iml': { type: 'jetbrains', name: 'JetBrains Rider', executable: process.platform === 'win32' ? 'rider.exe' : 'rider' },
+        '.idea': { type: 'jetbrains', name: 'JetBrains IntelliJ IDEA', executable: process.platform === 'win32' ? 'idea.exe' : 'idea' }
     };
 
     // Return matching IDE info or unknown if extension not recognized
-     return ideMap[ext] || { type: 'unknown', name: 'Unknown', executable: null };
+    return ideMap[ext] || { type: 'unknown', name: 'Unknown', executable: null };
 };
 
 /**
