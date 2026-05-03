@@ -6,8 +6,7 @@ describe('mainMenu.js', () => {
   let mainMenu;
   const mockIdePaths = {
     vsPath: 'C:\\Program Files\\Visual Studio\\2022\\Community\\Common7\\IDE',
-    riderPath: 'C:\\Users\\User\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\233.11235.16\\bin',
-    ideaPath: 'C:\\Program Files\\JetBrains\\IntelliJ IDEA 2023.2\\bin'
+    riderPath: 'C:\\Users\\User\\AppData\\Local\\JetBrains\\Toolbox\\apps\\Rider\\ch-0\\233.11235.16\\bin'
   };
 
   const vsSolution = {
@@ -24,14 +23,6 @@ describe('mainMenu.js', () => {
     type: 'jetbrains',
     ide: 'JetBrains Rider',
     executable: 'rider.exe'
-  };
-
-  const ideaSolution = {
-    path: 'C:\\Projects\\Project3\\.idea',
-    ext: '.idea',
-    type: 'jetbrains',
-    ide: 'JetBrains IntelliJ IDEA',
-    executable: 'idea.exe'
   };
 
   const mockMenuItems = [vsSolution, riderSolution];
@@ -253,25 +244,6 @@ describe('mainMenu.js', () => {
       );
     });
 
-    it('should spawn idea.exe for IntelliJ IDEA solutions', () => {
-      const { spawn } = require('child_process');
-      const mockSubprocess = { on: jest.fn().mockReturnThis(), unref: jest.fn() };
-      spawn.mockReturnValue(mockSubprocess);
-
-      mainMenu = require('../mainMenu');
-      mainMenu.loadSolution([vsSolution, ideaSolution], mockIdePaths);
-
-      mockInterface.question.mock.calls[0][1]('');
-      // Option 3 = .idea project
-      mockInterface.question.mock.calls[1][1]('3');
-
-      expect(spawn).toHaveBeenCalledWith(
-        expect.stringContaining('idea.exe'),
-        [ideaSolution.path],
-        expect.objectContaining({ detached: true })
-      );
-    });
-
     it('should open all solutions when option 1 is selected', () => {
       const { spawn } = require('child_process');
       const mockSubprocess = { on: jest.fn().mockReturnThis(), unref: jest.fn() };
@@ -288,7 +260,7 @@ describe('mainMenu.js', () => {
 
     it('should show error when IDE is not configured for solution type', () => {
       mainMenu = require('../mainMenu');
-      mainMenu.loadSolution(mockMenuItems, { vsPath: '', riderPath: '', ideaPath: '' });
+      mainMenu.loadSolution(mockMenuItems, { vsPath: '', riderPath: '' });
 
       mockInterface.question.mock.calls[0][1]('');
       mockInterface.question.mock.calls[1][1]('2'); // VS solution, but vsPath empty

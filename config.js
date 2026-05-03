@@ -16,7 +16,7 @@ function compareVersions(a, b) {
 
 /**
  * Detects installed IDEs on the system.
- * Searches common installation directories for Visual Studio, Rider, and IntelliJ IDEA.
+ * Searches common installation directories for Visual Studio and Rider.
  * Each result includes { version, sortableVersion, path }.
  * @private
  * @returns {Object} Object with arrays of found IDE installations
@@ -27,8 +27,7 @@ function detectInstalledIDEs() {
     const os = require('os');
     const found = {
         visualStudio: [],
-        rider: [],
-        intellijIdea: []
+        rider: []
     };
 
     if (process.platform === 'win32') {
@@ -134,11 +133,6 @@ function detectInstalledIDEs() {
                             if (fs.existsSync(riderExe)) {
                                 found.rider.push({ version: dir, sortableVersion, path: idePath });
                             }
-                        } else if (dir.startsWith('IntelliJ')) {
-                            const ideaExe = path.join(idePath, 'idea.exe');
-                            if (fs.existsSync(ideaExe)) {
-                                found.intellijIdea.push({ version: dir, sortableVersion, path: idePath });
-                            }
                         }
                     });
                 }
@@ -162,11 +156,6 @@ function detectInstalledIDEs() {
                                 if (fs.existsSync(riderExe)) {
                                     found.rider.push({ version: `${appName} ${version} (Toolbox)`, sortableVersion: version, path: binPath });
                                 }
-                            } else if (appName === 'IntelliJIdea') {
-                                const ideaExe = path.join(binPath, 'idea.exe');
-                                if (fs.existsSync(ideaExe)) {
-                                    found.intellijIdea.push({ version: `${appName} ${version} (Toolbox)`, sortableVersion: version, path: binPath });
-                                }
                             }
                         });
                     });
@@ -185,9 +174,6 @@ function detectInstalledIDEs() {
                 } else if (app.includes('Rider')) {
                     const idePath = path.join(appDir, app, 'Contents', 'MacOS');
                     found.rider.push({ version: app, path: idePath });
-                } else if (app.includes('IntelliJ')) {
-                    const idePath = path.join(appDir, app, 'Contents', 'MacOS');
-                    found.intellijIdea.push({ version: app, path: idePath });
                 }
             });
         } catch (e) {}
@@ -208,11 +194,6 @@ function detectInstalledIDEs() {
                             if (fs.existsSync(riderExe)) {
                                 found.rider.push({ version: dir, path: path.join(basePath, dir, 'bin') });
                             }
-                        } else if (dir.includes('idea')) {
-                            const ideaExe = path.join(basePath, dir, 'bin', 'idea');
-                            if (fs.existsSync(ideaExe)) {
-                                found.intellijIdea.push({ version: dir, path: path.join(basePath, dir, 'bin') });
-                            }
                         }
                     });
                 }
@@ -227,7 +208,7 @@ function detectInstalledIDEs() {
  * Gets and validates IDE paths from configuration.
  * Auto-detects installed IDEs or prompts user on first run.
  * @async
- * @returns {Promise<Object>} Object with vsPath, riderPath, and ideaPath properties
+ * @returns {Promise<Object>} Object with vsPath and riderPath properties
  */
 module.exports.getIDEPaths = async function() {
     const path = require('path');
@@ -248,12 +229,11 @@ module.exports.getIDEPaths = async function() {
 
     const idePaths = {
         vsPath: nconf.get('config:vsPath') || '',
-        riderPath: nconf.get('config:riderPath') || '',
-        ideaPath: nconf.get('config:ideaPath') || ''
+        riderPath: nconf.get('config:riderPath') || ''
     };
 
     // If any IDE path is configured, check for newer versions before returning
-    if (idePaths.vsPath || idePaths.riderPath || idePaths.ideaPath) {
+    if (idePaths.vsPath || idePaths.riderPath) {
         return await checkForIDEUpgrades(nconf, configPath, idePaths);
     }
 
@@ -268,7 +248,7 @@ module.exports.getIDEPaths = async function() {
      * @private
      * @param {Object} nconf - nconf instance with loaded config
      * @param {string} configPath - Path to the config file
-     * @param {Object} idePaths - Object with vsPath, riderPath, and ideaPath properties
+     * @param {Object} idePaths - Object with vsPath and riderPath properties
      * @returns {Promise<Object>} Resolves with (possibly updated) idePaths
      */
     async function checkForIDEUpgrades(nconf, configPath, idePaths) {
@@ -308,21 +288,7 @@ module.exports.getIDEPaths = async function() {
             }
         }
 
-        // Check IntelliJ IDEA upgrades
-        if (idePaths.ideaPath && detected.intellijIdea.length > 0) {
-            const configuredVersion = nconf.get('config:ideaSortableVersion') || '0';
-            const dismissedVersion = nconf.get('config:ideaDismissedUpgrade') || '';
-            const best = detected.intellijIdea.reduce((a, b) =>
-                compareVersions(b.sortableVersion, a.sortableVersion) > 0 ? b : a
-            );
-            if (
-                best.path !== idePaths.ideaPath &&
-                compareVersions(best.sortableVersion, configuredVersion) > 0 &&
-                best.sortableVersion !== dismissedVersion
-            ) {
-                upgrades.push({ type: 'idea', label: 'IntelliJ IDEA', best, key: 'ideaPath', versionKey: 'config:ideaSortableVersion', dismissKey: 'config:ideaDismissedUpgrade' });
-            }
-        }
+        // Check IntelliJ IDEA upgrades removed — IntelliJ IDEA support removed
 
         if (upgrades.length === 0) return idePaths;
 
@@ -374,10 +340,10 @@ module.exports.getIDEPaths = async function() {
             const detected = detectInstalledIDEs();
             
             // Check if any IDEs were found
-            const totalFound = detected.visualStudio.length + detected.rider.length + detected.intellijIdea.length;
+            const totalFound = detected.visualStudio.length + detected.rider.length;
             if (totalFound === 0) {
                 console.log('\n⚠️  No supported IDEs detected on your system.');
-                console.log('Supported IDEs: Visual Studio, JetBrains Rider, JetBrains IntelliJ IDEA\n');
+                console.log('Supported IDEs: Visual Studio, JetBrains Rider\n');
                 console.log('You can:');
                 console.log('  1. Install one of the supported IDEs');
                 console.log('  2. Provide the path manually below');
@@ -441,7 +407,7 @@ module.exports.getIDEPaths = async function() {
                             idePaths.riderPath = detected.rider[idx].path;
                             nconf.set('config:riderPath', detected.rider[idx].path);
                             nconf.set('config:riderSortableVersion', detected.rider[idx].sortableVersion || '0');
-                            promptForIDEAPath();
+                            finishConfiguration();
                         } else if (answer === '0') {
                             promptForRiderPathManual();
                         } else {
@@ -466,55 +432,13 @@ module.exports.getIDEPaths = async function() {
                         idePaths.riderPath = riderPath;
                         nconf.set('config:riderPath', riderPath);
                     }
-                    promptForIDEAPath();
-                });
-            }
-
-            function promptForIDEAPath() {
-                if (detected.intellijIdea.length > 0) {
-                    console.log('\nJetBrains IntelliJ IDEA installations found:');
-                    detected.intellijIdea.forEach((idea, idx) => {
-                        console.log(`  ${idx + 1}. ${idea.version}`);
-                    });
-                    console.log('  0. Skip / Enter custom path');
-                    ui.question('\nSelect IntelliJ IDEA (0-' + detected.intellijIdea.length + '): ', (answer) => {
-                        const idx = parseInt(answer) - 1;
-                        if (idx >= 0 && idx < detected.intellijIdea.length) {
-                            idePaths.ideaPath = detected.intellijIdea[idx].path;
-                            nconf.set('config:ideaPath', detected.intellijIdea[idx].path);
-                            nconf.set('config:ideaSortableVersion', detected.intellijIdea[idx].sortableVersion || '0');
-                            finishConfiguration();
-                        } else if (answer === '0') {
-                            promptForIDEAPathManual();
-                        } else {
-                            console.log('Invalid selection.'.bgRed);
-                            promptForIDEAPath();
-                        }
-                    });
-                } else {
-                    promptForIDEAPathManual();
-                }
-            }
-
-            function promptForIDEAPathManual() {
-                ui.question('\nJetBrains IntelliJ IDEA path (press Enter to skip): ', (ideaPath) => {
-                    ideaPath = ideaPath.trim();
-                    if (ideaPath) {
-                        const ideaExePath = path.join(ideaPath, process.platform === 'win32' ? 'idea.exe' : 'idea');
-                        if (!fs.existsSync(ideaExePath) && !fs.existsSync(ideaPath)) {
-                            console.log(`⚠️  IntelliJ IDEA not found at ${ideaPath}`.bgYellow);
-                            return promptForIDEAPathManual();
-                        }
-                        idePaths.ideaPath = ideaPath;
-                        nconf.set('config:ideaPath', ideaPath);
-                    }
                     finishConfiguration();
                 });
             }
 
             function finishConfiguration() {
                 nconf.save();
-                if (idePaths.vsPath || idePaths.riderPath || idePaths.ideaPath) {
+                if (idePaths.vsPath || idePaths.riderPath) {
                     console.log('\n✓ IDE configuration saved.'.bgGreen);
                 } else {
                     console.log('\n⚠️  No IDEs configured. You can configure them later by deleting ~/.sln-opener/config.json'.bgYellow);
@@ -531,8 +455,8 @@ module.exports.getIDEPaths = async function() {
  * Prompts the user to choose which configured IDE to use for the session.
  * Skips the prompt if only one IDE is configured (auto-selects it).
  * @async
- * @param {Object} idePaths - Object with vsPath, riderPath, and ideaPath properties
- * @returns {Promise<string|null>} Resolves with 'vs', 'rider', 'idea', or null (auto per file)
+ * @param {Object} idePaths - Object with vsPath and riderPath properties
+ * @returns {Promise<string|null>} Resolves with 'vs', 'rider', or null (auto per file)
  */
 module.exports.selectIDEForSession = async function(idePaths) {
     const readline = require('readline');
@@ -540,7 +464,6 @@ module.exports.selectIDEForSession = async function(idePaths) {
     const options = [];
     if (idePaths.vsPath)    options.push({ key: 'vs',    label: 'Visual Studio' });
     if (idePaths.riderPath) options.push({ key: 'rider', label: 'JetBrains Rider' });
-    if (idePaths.ideaPath)  options.push({ key: 'idea',  label: 'IntelliJ IDEA' });
 
     // Nothing configured — caller will handle this
     if (options.length === 0) return null;
@@ -586,18 +509,11 @@ module.exports.selectIDEForSession = async function(idePaths) {
 module.exports.detectIDEType = function(filePath) {
     const path = require('path');
     const ext = path.extname(filePath).toLowerCase();
-    const base = path.basename(filePath).toLowerCase();
-
-    // Handle the special case where .idea is a directory (IntelliJ projects)
-    if (base === '.idea') {
-        return { type: 'jetbrains', name: 'JetBrains IntelliJ IDEA', executable: process.platform === 'win32' ? 'idea.exe' : 'idea' };
-    }
 
     const ideMap = {
         '.sln': { type: 'vs', name: 'Visual Studio', executable: 'devenv.exe' },
         '.slnx': { type: 'vs', name: 'Visual Studio 2022', executable: 'devenv.exe' },
-        '.iml': { type: 'jetbrains', name: 'JetBrains Rider', executable: process.platform === 'win32' ? 'rider.exe' : 'rider' },
-        '.idea': { type: 'jetbrains', name: 'JetBrains IntelliJ IDEA', executable: process.platform === 'win32' ? 'idea.exe' : 'idea' }
+        '.iml': { type: 'jetbrains', name: 'JetBrains Rider', executable: process.platform === 'win32' ? 'rider.exe' : 'rider' }
     };
 
     // Return matching IDE info or unknown if extension not recognized
@@ -607,7 +523,7 @@ module.exports.detectIDEType = function(filePath) {
 /**
  * Gets all solution files in the current directory and subdirectories.
  * Recursively searches from the current working directory for multiple file types.
- * Supported types: .sln (Visual Studio), .slnx (VS2022), .iml (JetBrains Rider), .idea (IntelliJ IDEA)
+ * Supported types: .sln (Visual Studio), .slnx (VS2022), .iml (JetBrains Rider)
  * @returns {Array<Object>} Array of objects with { path, type, ide, executable } properties
  */
 
@@ -653,8 +569,6 @@ module.exports.getSolutions = function() {
      const ignorePatterns = readIgnoreFile();
 
      const supportedFileExtensions = ['.sln', '.slnx', '.iml'];
-     // .idea is a directory (IntelliJ IDEA project), not a file extension
-     const supportedDirectoryNames = ['.idea'];
 
      // Check if a file has a supported solution extension
      const isSupportedFile = function (element) {
@@ -673,19 +587,6 @@ module.exports.getSolutions = function() {
                  try {
                      const stats = fs.statSync(fullPath);
                      if (stats.isDirectory()) {
-                         // Check if this directory is itself an IntelliJ IDEA project (.idea dir)
-                         if (supportedDirectoryNames.includes(entry.toLowerCase())) {
-                             const ideInfo = detectIDEType(fullPath);
-                             solutions.push({
-                                 path: fullPath,
-                                 ext: entry.toLowerCase(),
-                                 type: ideInfo.type,
-                                 ide: ideInfo.name,
-                                 executable: ideInfo.executable
-                             });
-                             // Don't recurse into .idea dirs
-                             continue;
-                         }
                          // Check if directory matches any ignore patterns
                          const normalized = path.normalize(fullPath).toLowerCase();
                          const shouldSkip = ignorePatterns.some(p => {

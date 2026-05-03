@@ -49,12 +49,6 @@ describe('config.js', () => {
       expect(ide.executable).toBe('rider.exe');
     });
 
-    it('should detect JetBrains IntelliJ .idea files', () => {
-      config = require('../config');
-      const ide = config.detectIDEType('C:\\Project\\project.iml');
-      expect(ide.type).toBe('jetbrains');
-    });
-
     it('should handle case-insensitive extensions', () => {
       config = require('../config');
       const ide = config.detectIDEType('C:\\Project\\Solution.SLN');
@@ -292,7 +286,7 @@ describe('config.js', () => {
   describe('selectIDEForSession', () => {
     it('should return null when no IDEs are configured', async () => {
       config = require('../config');
-      const result = await config.selectIDEForSession({ vsPath: '', riderPath: '', ideaPath: '' });
+      const result = await config.selectIDEForSession({ vsPath: '', riderPath: '' });
       expect(result).toBeNull();
     });
 
@@ -300,8 +294,7 @@ describe('config.js', () => {
       config = require('../config');
       const result = await config.selectIDEForSession({
         vsPath: 'C:\\VS\\IDE',
-        riderPath: '',
-        ideaPath: ''
+        riderPath: ''
       });
       expect(result).toBe('vs');
     });
@@ -310,20 +303,9 @@ describe('config.js', () => {
       config = require('../config');
       const result = await config.selectIDEForSession({
         vsPath: '',
-        riderPath: 'C:\\Rider\\bin',
-        ideaPath: ''
+        riderPath: 'C:\\Rider\\bin'
       });
       expect(result).toBe('rider');
-    });
-
-    it('should auto-select "idea" when only IDEA is configured', async () => {
-      config = require('../config');
-      const result = await config.selectIDEForSession({
-        vsPath: '',
-        riderPath: '',
-        ideaPath: 'C:\\IDEA\\bin'
-      });
-      expect(result).toBe('idea');
     });
 
     it('should prompt and return selected IDE when multiple are configured', async () => {
@@ -337,8 +319,7 @@ describe('config.js', () => {
       config = require('../config');
       const result = await config.selectIDEForSession({
         vsPath: 'C:\\VS\\IDE',
-        riderPath: 'C:\\Rider\\bin',
-        ideaPath: ''
+        riderPath: 'C:\\Rider\\bin'
       });
 
       expect(result).toBe('vs');
@@ -349,14 +330,13 @@ describe('config.js', () => {
       const mockUi = { question: jest.fn(), close: jest.fn() };
       readline.createInterface.mockReturnValue(mockUi);
 
-      // Auto option is index options.length+1, here VS+Rider = 2 options, so auto = 3
+      // Auto option is VS+Rider = 2 options, so auto = 3
       mockUi.question.mockImplementation((prompt, cb) => cb('3'));
 
       config = require('../config');
       const result = await config.selectIDEForSession({
         vsPath: 'C:\\VS\\IDE',
-        riderPath: 'C:\\Rider\\bin',
-        ideaPath: ''
+        riderPath: 'C:\\Rider\\bin'
       });
 
       expect(result).toBeNull();

@@ -29,7 +29,6 @@ Supported File Types:
   .sln             Visual Studio solution
   .slnx            Visual Studio 2022 solution
   .iml             JetBrains Rider project
-  .idea            JetBrains IntelliJ IDEA project
 
 Examples:
   os                  Opens a menu to select and open solutions in the current directory
@@ -56,7 +55,7 @@ async function startUp() {
     const idePaths = await config.getIDEPaths();
 
     // If at least one IDE is configured, proceed to solution discovery
-    if (idePaths.vsPath || idePaths.riderPath || idePaths.ideaPath) {
+    if (idePaths.vsPath || idePaths.riderPath) {
         // Let user choose which IDE to use (auto-skipped when only one is configured)
         const selectedIDE = await config.selectIDEForSession(idePaths);
         // Discover all solution files in current directory and subdirectories

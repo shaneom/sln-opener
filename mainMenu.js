@@ -8,8 +8,8 @@
  * - Open a specific solution
  * - Exit
  * @param {Array<Object>} menuItems - Array of solution/project objects with path, ide, and executable properties
- * @param {Object} idePaths - Object with vsPath, riderPath, and ideaPath properties
- * @param {string|null} selectedIDE - 'vs', 'rider', 'idea', or null for auto-detection per file type
+ * @param {Object} idePaths - Object with vsPath and riderPath properties
+ * @param {string|null} selectedIDE - 'vs', 'rider', or null for auto-detection per file type
  */
 module.exports.loadSolution = function(menuItems, idePaths, selectedIDE = null) {
     const readline = require('readline');
@@ -214,10 +214,6 @@ module.exports.loadSolution = function(menuItems, idePaths, selectedIDE = null) 
         } else if (ideType === 'rider' || (ideType === 'jetbrains' && solutionFile.executable === 'rider.exe')) {
             if (idePaths.riderPath) {
                 ideExePath = path.join(idePaths.riderPath, 'rider.exe');
-            }
-        } else if (ideType === 'idea' || (ideType === 'jetbrains' && solutionFile.executable === 'idea.exe')) {
-            if (idePaths.ideaPath) {
-                ideExePath = path.join(idePaths.ideaPath, 'idea.exe');
             }
         }
 
